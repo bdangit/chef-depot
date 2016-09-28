@@ -6,10 +6,40 @@
 # found at https://docs.chef.io/inspec_reference.html
 
 unless os.windows?
-  describe user('root') do
+  describe user('hab') do
     it { should exist }
-    skip 'This is an example test, replace with your own test.'
+    its('group') { should eq 'hab' }
   end
+
+  describe group('hab') do
+    it { should exist }
+  end
+end
+
+describe file('/bin/hab') do
+  it { should be_executable }
+  it { should be_symlink }
+end
+
+describe file('/bin/hab-director') do
+  it { should be_executable }
+  it { should be_symlink }
+end
+
+describe file('/hab/etc/director') do
+  it { should be_directory }
+end
+
+describe file('/hab/svc/hab-builder-api') do
+  it { should be_directory }
+end
+
+describe file('/hab/svc/hab-builder-api/config') do
+  it { should be_directory }
+end
+
+describe file('/hab/svc/hab-builder-sessionsrv') do
+  it { should be_directory }
 end
 
 describe port(80) do

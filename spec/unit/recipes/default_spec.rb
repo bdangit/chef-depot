@@ -24,18 +24,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
 require 'spec_helper'
 
 describe 'depot::default' do
-  context 'When all attributes are default, on an unspecified platform' do
-    let(:chef_run) do
-      runner = ChefSpec::ServerRunner.new
-      runner.converge(described_recipe)
-    end
+  let(:chef_run) do
+    runner = ChefSpec::ServerRunner.new(
+      platform: 'ubuntu',
+      version: '16.04'
+    )
+    runner.converge(described_recipe)
+  end
 
-    it 'converges successfully' do
-      expect { chef_run }.to_not raise_error
-    end
+  it 'creates hab group' do
+    expect(chef_run).to create_group('hab')
+  end
+
+  it 'creates hab user' do
+    expect(chef_run).to create_user('hab').with(
+      group: 'hab'
+    )
+  end
+
+  it 'creates hab-director binlink' do
+    expect(chef_run).to run_execute('hab pkg binlink core/hab-director hab-director')
+  end
+
+  it 'creates /hab/etc/director' do
+    expect(chef_run).to create_directory('/hab/etc/director')
+  end
+
+  it 'creates /hab/svc/hab-builder-api/config' do
+    expect(chef_run).to create_directory('/hab/svc/hab-builder-api/config')
+  end
+
+  it 'creates /hab/svc/hab-builder-sessionsrv' do
+    expect(chef_run).to create_directory('/hab/svc/hab-builder-sessionsrv')
   end
 end

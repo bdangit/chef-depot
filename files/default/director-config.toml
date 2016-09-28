@@ -1,0 +1,20 @@
+[cfg.services.core.redis.private]
+start = "--permanent-peer"
+
+[cfg.services.core.hab-builder-router.private]
+start = "--permanent-peer"
+
+[cfg.services.core.hab-builder-jobsrv.private]
+start = "--permanent-peer --bind database:redis.private,router:hab-builder-router.private"
+
+[cfg.services.core.hab-builder-sessionsrv.private]
+start = "--permanent-peer --bind database:redis.private,router:hab-builder-router.private"
+
+[cfg.services.core.hab-builder-vault.private]
+start = "--permanent-peer --bind database:redis.private,router:hab-builder-router.private"
+
+[cfg.services.core.hab-builder-api.private]
+start = "--permanent-peer --bind database:redis.private,router:hab-builder-router.private"
+
+[cfg.services.core.builder-api-proxy.private]
+start = "--permanent-peer --bind router:hab-builder-router.private"

@@ -1,11 +1,15 @@
-# Habitat Depot
+Habitat Depot
+=============
+
+> Use at your own risk!
 
 Cook up your own Private Habitat Depot.
 
+## Testing
+
+A vagrant box is spun up on 192.168.96.31
+
     $ kitchen converge
-    $ kitchen login
-    vagrant@default-ubuntu-1604:~$ export SSL_CERT_FILE=$(hab pkg path core/cacerts)/ssl/cert.pem
-    vagrant@default-ubuntu-1604:~$ sudo /bin/hab-director start -c /hab/etc/director/config.toml
 
 ## Credits
 

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: depot
-# Recipe:: default
+# Recipe:: install
 #
 # The MIT License (MIT)
 #
@@ -23,5 +23,49 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-include_recipe 'depot::install'
-include_recipe 'depot::service'
+group 'hab'
+
+user 'hab' do
+  group 'hab'
+end
+
+hab_install 'install habitat'
+hab_package 'core/hab-sup'
+hab_package 'core/hab-director'
+
+execute 'hab pkg binlink core/hab-director hab-director' do
+  not_if { ::File.exist? '/bin/hab-director' }
+end
+
+directory '/hab/etc/director' do
+  recursive true
+end
+
+cookbook_file '/hab/etc/director/config.toml' do
+  source 'director-config.toml'
+end
+
+directory '/hab/svc/hab-builder-api/config' do
+  recursive true
+end
+
+template '/hab/svc/hab-builder-api/user.toml' do
+  source 'hab-builder-api-user.toml.erb'
+  variables(
+    oauth_app_client_id: node['depot']['oauth']['client_id'],
+    oauth_app_client_secret: node['depot']['oauth']['client_secret'],
+    fqdn: node.name
+  )
+end
+
+directory '/hab/svc/hab-builder-sessionsrv' do
+  recursive true
+end
+
+template '/hab/svc/hab-builder-sessionsrv/user.toml' do
+  source 'hab-builder-sessionsrv-user.toml.erb'
+  variables(
+    oauth_app_client_id: node['depot']['oauth']['client_id'],
+    oauth_app_client_secret: node['depot']['oauth']['client_secret']
+  )
+end

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: depot
-# Recipe:: default
+# Recipe:: install
 #
 # The MIT License (MIT)
 #
@@ -23,5 +23,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-include_recipe 'depot::install'
-include_recipe 'depot::service'
+systemd_service 'hab-depot' do
+  description 'Habitat Depot Server'
+  after %w( network.target )
+  install do
+    wanted_by 'default.target'
+  end
+  service do
+    environment 'SSL_CERT_FILE' => '$(hab pkg path core/cacerts)/ssl/cert.pem'
+    exec_start '/bin/hab-director start -c /hab/etc/director/config.toml'
+  end
+end
+
+service 'hab-depot' do
+  action [:enable, :start]
+end

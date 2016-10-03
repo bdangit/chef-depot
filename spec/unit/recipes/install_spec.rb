@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: depot
-# Recipe:: default
+# Spec:: default
 #
 # The MIT License (MIT)
 #
@@ -23,5 +23,42 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-include_recipe 'depot::install'
-include_recipe 'depot::service'
+
+require 'spec_helper'
+
+describe 'depot::install' do
+  let(:chef_run) do
+    runner = ChefSpec::ServerRunner.new(
+      platform: 'ubuntu',
+      version: '16.04'
+    )
+    runner.converge(described_recipe)
+  end
+
+  it 'creates hab group' do
+    expect(chef_run).to create_group('hab')
+  end
+
+  it 'creates hab user' do
+    expect(chef_run).to create_user('hab').with(
+      group: 'hab'
+    )
+  end
+
+  it 'creates hab-director binlink' do
+    expect(chef_run).to run_execute('hab pkg binlink core/hab-director ' \
+                                    'hab-director')
+  end
+
+  it 'creates /hab/etc/director' do
+    expect(chef_run).to create_directory('/hab/etc/director')
+  end
+
+  it 'creates /hab/svc/hab-builder-api/config' do
+    expect(chef_run).to create_directory('/hab/svc/hab-builder-api/config')
+  end
+
+  it 'creates /hab/svc/hab-builder-sessionsrv' do
+    expect(chef_run).to create_directory('/hab/svc/hab-builder-sessionsrv')
+  end
+end

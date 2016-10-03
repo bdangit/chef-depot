@@ -35,29 +35,11 @@ describe 'depot::default' do
     runner.converge(described_recipe)
   end
 
-  it 'creates hab group' do
-    expect(chef_run).to create_group('hab')
+  it 'includes ::install' do
+    expect(chef_run).to include_recipe('depot::install')
   end
 
-  it 'creates hab user' do
-    expect(chef_run).to create_user('hab').with(
-      group: 'hab'
-    )
-  end
-
-  it 'creates hab-director binlink' do
-    expect(chef_run).to run_execute('hab pkg binlink core/hab-director hab-director')
-  end
-
-  it 'creates /hab/etc/director' do
-    expect(chef_run).to create_directory('/hab/etc/director')
-  end
-
-  it 'creates /hab/svc/hab-builder-api/config' do
-    expect(chef_run).to create_directory('/hab/svc/hab-builder-api/config')
-  end
-
-  it 'creates /hab/svc/hab-builder-sessionsrv' do
-    expect(chef_run).to create_directory('/hab/svc/hab-builder-sessionsrv')
+  it 'includes ::service' do
+    expect(chef_run).to include_recipe('depot::service')
   end
 end

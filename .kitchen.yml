@@ -19,6 +19,6 @@ suites:
       inspec_tests:
         - test/recipes
     attributes:
-#    driver_config:
-#      network:
-#        - [ "private_network", {ip: "192.168.96.31"} ]
+    driver_config:
+      network:
+        - [ "private_network", {ip: "192.168.96.31"} ]

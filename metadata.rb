@@ -1,13 +1,15 @@
 name 'depot'
 maintainer 'Ben Dang'
 maintainer_email 'me@bdang.it'
-license 'mit'
+license 'MIT'
 description 'Installs/Configures Habitat Depot'
-long_description 'Installs/Configures Habitat Depot'
-version '0.1.3'
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+version '0.2.0'
 
 depends 'habitat'
-depends 'systemd'
 
 issues_url 'https://github.com/bdangit/chef-depot/issues' if respond_to?(:issues_url)
 source_url 'https://github.com/bdangit/chef-depot' if respond_to?(:source_url)
+
+# Note: "habitat" resources require this version
+chef_version '>= 12.11'

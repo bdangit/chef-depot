@@ -45,6 +45,7 @@ cookbook_file '/hab/etc/director/config.toml' do
   source 'director-config.toml'
 end
 
+# setup hab-builder-api
 directory '/hab/svc/hab-builder-api/config' do
   recursive true
 end
@@ -54,10 +55,12 @@ template '/hab/svc/hab-builder-api/user.toml' do
   variables(
     oauth_app_client_id: node['depot']['oauth']['client_id'],
     oauth_app_client_secret: node['depot']['oauth']['client_secret'],
-    fqdn: node.name
+    fqdn: node['depot']['fqdn'].nil? ? node.name : node['depot']['fqdn']
   )
+  sensitive true
 end
 
+# setup hab-builder-sessionsrv
 directory '/hab/svc/hab-builder-sessionsrv' do
   recursive true
 end
@@ -68,4 +71,5 @@ template '/hab/svc/hab-builder-sessionsrv/user.toml' do
     oauth_app_client_id: node['depot']['oauth']['client_id'],
     oauth_app_client_secret: node['depot']['oauth']['client_secret']
   )
+  sensitive true
 end

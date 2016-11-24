@@ -23,18 +23,26 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-systemd_service 'hab-depot' do
-  description 'Habitat Depot Server'
-  after %w( network.target )
-  install do
-    wanted_by 'default.target'
-  end
-  service do
-    environment 'SSL_CERT_FILE' => '$(hab pkg path core/cacerts)/ssl/cert.pem'
-    exec_start '/bin/hab-director start -c /hab/etc/director/config.toml'
-  end
-end
 
-service 'hab-depot' do
+# note: the origin 'my' is fictious. hab_service requires there to be an
+#       origin, however, for this we are running hab-director and not a
+#       specific application.
+hab_service 'my/hab-depot' do
+  unit_content(lazy do
+    {
+      'Unit' => {
+        'Description' => 'Habitat Depot Server',
+        'After' => 'network.target audit.service'
+      },
+      'Service' => {
+        'Environment' => ['SSL_CERT_FILE=',
+                          shell_out('/bin/hab pkg path core/cacerts').stdout.chomp,
+                          '/ssl/cert.pem'
+                         ].join(''),
+        'ExecStart' => '/bin/hab-director start -c /hab/etc/director/config.toml',
+        'Restart' => 'on-failure'
+      }
+    }
+  end)
   action [:enable, :start]
 end

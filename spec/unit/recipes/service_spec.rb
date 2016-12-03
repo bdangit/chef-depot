@@ -27,20 +27,18 @@
 require 'spec_helper'
 
 describe 'depot::service' do
-  let(:chef_run) do
-    runner = ChefSpec::ServerRunner.new(
+  cached(:chef_run) do
+    ChefSpec::ServerRunner.new(
       platform: 'ubuntu',
       version: '16.04'
-    )
-    runner.converge(described_recipe)
+    ).converge(described_recipe)
   end
 
-  it 'create systemd \'hab-depot\' service' do
-    expect(chef_run).to create_systemd_service('hab-depot')
+  it 'starts \'hab-depot\' service' do
+    expect(chef_run).to start_hab_service('my/hab-depot')
   end
 
-  it 'enables and starts \'hab-depot\'' do
-    expect(chef_run).to enable_service('hab-depot')
-    expect(chef_run).to start_service('hab-depot')
+  it 'enables \'hab-depot\' service' do
+    expect(chef_run).to enable_hab_service('my/hab-depot')
   end
 end

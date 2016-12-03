@@ -1,6 +1,9 @@
 ---
 driver:
   name: vagrant
+  customize:
+    cpus: 2
+    memory: 2048
 
 provisioner:
   name: chef_zero
@@ -19,6 +22,11 @@ suites:
       inspec_tests:
         - test/recipes
     attributes:
+      depot:
+        fqdn: 192.168.96.31
+        # oauth:
+        #   client_id: changeme
+        #   client_secret: changeme
     driver_config:
       network:
-        - [ "private_network", {ip: "192.168.96.31"} ]
+        - [ "private_network", { ip: "192.168.96.31" } ]

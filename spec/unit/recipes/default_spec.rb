@@ -27,12 +27,11 @@
 require 'spec_helper'
 
 describe 'depot::default' do
-  let(:chef_run) do
-    runner = ChefSpec::ServerRunner.new(
+  cached(:chef_run) do
+    ChefSpec::ServerRunner.new(
       platform: 'ubuntu',
       version: '16.04'
-    )
-    runner.converge(described_recipe)
+    ).converge(described_recipe)
   end
 
   it 'includes ::install' do

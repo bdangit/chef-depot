@@ -34,11 +34,41 @@ describe 'depot::default' do
     ).converge(described_recipe)
   end
 
-  it 'includes ::install' do
-    expect(chef_run).to include_recipe('depot::install')
+  it 'creates hab group' do
+    expect(chef_run).to create_group('hab')
   end
 
-  it 'includes ::service' do
-    expect(chef_run).to include_recipe('depot::service')
+  it 'creates hab user' do
+    expect(chef_run).to create_user('hab').with(
+      group: 'hab'
+    )
+  end
+
+  it 'creates /hab/svc/hab-builder-api/config' do
+    expect(chef_run).to create_directory('/hab/svc/hab-builder-api/config')
+  end
+
+  it 'creates /hab/svc/hab-builder-sessionsrv' do
+    expect(chef_run).to create_directory('/hab/svc/hab-builder-sessionsrv')
+  end
+
+  context 'habitat depot services' do
+    let(:api_service) { chef_run.hab_service('core/hab-builder-api') }
+    let(:session_service){ chef_run.hab_service('core/hab-builder-sessionsrv') }
+
+    %w{redis hab-builder-router hab-builder-sessionsrv hab-builder-vault hab-builder-api builder-api-proxy}.each do |svc|
+      it "manages the hab_service #{svc}" do
+        expect(chef_run).to enable_hab_service("core/#{svc}")
+        expect(chef_run).to start_hab_service("core/#{svc}")
+      end
+    end
+
+    it 'restarts hab-builder-api if its user config changes' do
+      expect(api_service).to subscribe_to('template[/hab/svc/hab-builder-api/user.toml]')
+    end
+
+    it 'restarts hab-builder-sessionsrv if its user config changes' do
+      expect(session_service).to subscribe_to('template[/hab/svc/hab-builder-sessionsrv/user.toml]')
+    end
   end
 end

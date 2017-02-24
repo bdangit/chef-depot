@@ -3,6 +3,8 @@ Habitat Depot
 
 This cookbook will set up a private [Habitat](http://habitat.sh) Depot, running all the required services on one machine.
 
+While this is tested and may work for other users, private depots are *not yet supported* by Chef Software, Inc. nor the Habitat project. Use at your own risk, and be aware that there is no planned migration strategy.
+
 ## Requirements
 
 - Chef 12.11 or higher (for [habitat cookbook](https://supermarket.chef.io/cookbooks/habitat))
@@ -70,7 +72,3 @@ $ hab origin key upload --url http://192.168.96.31/v1/depot kitchen-tester -z $(
 ```
 $ hab pkg upload --url http://192.168.96.31/v1/depot somepackage.hart -z $(cat ~/.github/kitchen-habitat-depot)
 ```
-
-## Credits
-
-Based in part on @jtimberman's [private depot guide](https://gist.github.com/jtimberman/f939e9c822c581bc7168026f3fa4211c)

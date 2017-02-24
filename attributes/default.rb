@@ -1,7 +1,6 @@
 # register an OAuth application for GitHub
-default['depot']['oauth']['client_id'] = 'blah'
-default['depot']['oauth']['client_secret'] = 'secret'
+default['depot']['oauth']['client_id'] = nil
+default['depot']['oauth']['client_secret'] = nil
 
 # fqdn that can be resolved, ie depot.example.com
-# note: if not filled in, this value will be set to do `node.name`
-default['depot']['fqdn'] = nil
+default['depot']['fqdn'] = node['fqdn'] || node.name

@@ -18,15 +18,16 @@ suites:
   - name: default
     run_list:
       - recipe[depot::default]
+      - recipe[test::default]
     verifier:
       inspec_tests:
         - test/recipes
     attributes:
       depot:
         fqdn: 192.168.96.31
-        # oauth:
-        #   client_id: changeme
-        #   client_secret: changeme
+        oauth:
+          client_id: <%= ENV["GITHUB_CLIENT_ID"] || "github_client_id" %>
+          client_secret: <%= ENV["GITHUB_CLIENT_SECRET"] || "github_client_secret" %>
     driver_config:
       network:
         - [ "private_network", { ip: "192.168.96.31" } ]

@@ -53,9 +53,8 @@ end
 template '/hab/svc/hab-builder-api/user.toml' do
   source 'hab-builder-api-user.toml.erb'
   variables(
-    oauth_app_client_id: node['depot']['oauth']['client_id'],
-    oauth_app_client_secret: node['depot']['oauth']['client_secret'],
-    fqdn: node['depot']['fqdn']
+    oauth: node['depot']['oauth'],
+    user_toml: node['depot']['user_toml']
   )
   sensitive true
 end
@@ -67,10 +66,7 @@ end
 
 template '/hab/svc/hab-builder-sessionsrv/user.toml' do
   source 'hab-builder-sessionsrv-user.toml.erb'
-  variables(
-    oauth_app_client_id: node['depot']['oauth']['client_id'],
-    oauth_app_client_secret: node['depot']['oauth']['client_secret']
-  )
+  variables oauth: node['depot']['oauth']
   sensitive true
 end
 

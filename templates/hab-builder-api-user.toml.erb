@@ -1,13 +1,9 @@
 [github]
-client_id       = "<%= @oauth_app_client_id %>"
-client_secret   = "<%= @oauth_app_client_secret %>"
+<% @oauth.each do |cfg, val| -%>
+<%= cfg.ljust(@oauth.keys.max_by{|i|i.length}.length) %> = <%= val.inspect %>
+<% end -%>
 
 [ui]
-app_url         = "http://<%= @fqdn %>/v1"
-community_url   = "https://www.habitat.sh/community"
-docs_url        = "https://www.habitat.sh/docs"
-environment     = "private"
-friends_only    = false
-source_code_url = "https://github.com/habitat-sh/habitat"
-tutorials_url   = "https://www.habitat.sh/tutorials"
-www_url         = "https://www.habitat.sh"
+<% @user_toml.each do |cfg, val| -%>
+<%= cfg.ljust(@user_toml.keys.max_by{|i|i.length}.length) %> = <%= val.inspect %>
+<% end -%>

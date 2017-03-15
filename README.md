@@ -31,11 +31,14 @@ A service will be created as `hab-depot`.
 
 ## Attributes
 
+There are several attributes used to render the configuration files used for the api and sessionsrv services. They live under `node['depot']['oauth']` and `node['depot']['user_toml']`.
+
 |*name*|*default*|*description*|
 |------|---------|-------------|
 |`node['depot']['oauth']['client_id']`|`nil`| Github Client ID for OAuth |
 |`node['depot']['oauth']['client_secret']`|`nil`| Github Client Secret for OAuth |
-|`node['depot']['fqdn']`|`node['fqdn']` or `node.name`|This will be set to the `node['fqdn']` attribute, and fall back to the `node.name`. |
+|`node['depot']['user_toml']`|See `./attributes/default.rb`| Specify each key in the hash rendered in the TOML file with its value |
+|`node['depot']['user_toml']['app_url']`|`'http://FQDN/v1'`| FQDN defaults to `node['fqdn']`, falling back to `node.name` |
 
 If the `client_id` and `client_secret` are not set, users will not be able to sign in, create origins, or upload packages to the Depot. Create an OAuth application on Github first, and then use the values for these attributes.
 

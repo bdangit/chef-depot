@@ -1,3 +1,4 @@
 [github]
-client_id       = "<%= @oauth_app_client_id %>"
-client_secret   = "<%= @oauth_app_client_secret %>"
+<% @oauth.each do |cfg, val| -%>
+<%= cfg.ljust(@oauth.keys.max_by{|i|i.length}.length) %> = <%= val.inspect %>
+<% end -%>

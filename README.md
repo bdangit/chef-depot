@@ -18,7 +18,7 @@ While this is tested and may work for other users, private depots are *not yet s
 Place a dependency on the depot cookbook in your cookbook's metadata.rb.
 
 ```ruby
-depends 'depot', '~> 0.2.0'
+depends 'depot', '~> 0.4.0'
 ```
 
 Then, in a recipe:

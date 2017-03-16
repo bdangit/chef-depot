@@ -4,7 +4,7 @@ maintainer_email 'me@bdang.it'
 license 'MIT'
 description 'Installs/Configures Habitat Depot'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '0.3.0'
+version '0.4.0'
 
 depends 'habitat', '~> 0.3.0'
 

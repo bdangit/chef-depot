@@ -1,6 +1,6 @@
 %w(redis hab-builder-router hab-builder-api hab-builder-vault hab-builder-sessionsrv builder-api-proxy).each do |svc|
   describe service(svc) do
-    it { should be_running}
+    it { should be_running }
   end
 end
 

@@ -35,7 +35,7 @@ end
 
 hab_install [cookbook_name, recipe_name].join('::')
 
-%w{hab-sup redis hab-builder-router hab-builder-sessionsrv hab-builder-vault hab-builder-api builder-api-proxy}.each do |pkg|
+%w(hab-sup redis builder-router builder-sessionsrv hab-builder-vault builder-api builder-api-proxy).each do |pkg|
   hab_package "core/#{pkg}"
 end
 

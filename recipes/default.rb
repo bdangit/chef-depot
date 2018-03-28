@@ -50,7 +50,7 @@ log 'oauth-warn' do
   only_if { node['depot']['oauth']['client_id'].nil? && node['depot']['oauth']['client_secret'].nil? }
 end
 
-template '/hab/svc/hab-builder-api/user.toml' do
+template '/hab/svc/builder-api/user.toml' do
   source 'hab-builder-api-user.toml.erb'
   variables(
     oauth: node['depot']['oauth'],
@@ -60,11 +60,11 @@ template '/hab/svc/hab-builder-api/user.toml' do
 end
 
 # setup hab-builder-sessionsrv
-directory '/hab/svc/hab-builder-sessionsrv' do
+directory '/hab/svc/builder-sessionsrv' do
   recursive true
 end
 
-template '/hab/svc/hab-builder-sessionsrv/user.toml' do
+template '/hab/svc/builder-sessionsrv/user.toml' do
   source 'hab-builder-sessionsrv-user.toml.erb'
   variables oauth: node['depot']['oauth']
   sensitive true
@@ -78,7 +78,7 @@ hab_service 'core/redis' do
   action :load
 end
 
-hab_service 'core/hab-builder-router' do
+hab_service 'core/builder-router' do
   permanent_peer true
   listen_http '0.0.0.0:9630'
   listen_gossip '0.0.0.0:9639'
@@ -86,11 +86,11 @@ hab_service 'core/hab-builder-router' do
   action :load
 end
 
-hab_service 'core/hab-builder-sessionsrv' do
+hab_service 'core/builder-sessionsrv' do
   permanent_peer true
   listen_http '0.0.0.0:9629'
   listen_gossip '0.0.0.0:9640'
-  bind %w( database:redis.private router:hab-builder-router.private)
+  bind %w( database:redis.private router:builder-router.private)
   action :load
   subscribes :restart, 'template[/hab/svc/hab-builder-sessionsrv/user.toml]'
 end
@@ -99,23 +99,23 @@ hab_service 'core/hab-builder-vault' do
   permanent_peer true
   listen_http '0.0.0.0:9628'
   listen_gossip '0.0.0.0:9641'
-  bind %w( database:redis.private router:hab-builder-router.private)
+  bind %w( database:redis.private router:builder-router.private)
   action :load
 end
 
-hab_service 'core/hab-builder-api' do
+hab_service 'core/builder-api' do
   permanent_peer true
   listen_http '0.0.0.0:9627'
   listen_gossip '0.0.0.0:9642'
-  bind %w( database:redis.private router:hab-builder-router.private)
+  bind %w( database:redis.private router:builder-router.private)
   action :load
-  subscribes :restart, 'template[/hab/svc/hab-builder-api/user.toml]'
+  subscribes :restart, 'template[/hab/svc/builder-api/user.toml]'
 end
 
 hab_service 'core/builder-api-proxy' do
   permanent_peer true
   listen_http '0.0.0.0:9626'
   listen_gossip '0.0.0.0:9643'
-  bind 'router:hab-builder-router.private'
+  bind 'router:builder-router.private'
   action :load
 end

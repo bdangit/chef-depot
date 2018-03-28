@@ -35,13 +35,10 @@ end
 
 hab_install [cookbook_name, recipe_name].join('::')
 
-%w{hab-sup redis hab-builder-router hab-builder-sessionsrv hab-builder-vault hab-builder-api builder-api-proxy}.each do |pkg|
-  hab_package "core/#{pkg}"
-end
+depot_service_list = %w(hab-sup redis builder-router builder-sessionsrv hab-builder-vault builder-api builder-api-proxy)
 
-# setup hab-builder-api
-directory '/hab/svc/hab-builder-api/config' do
-  recursive true
+depot_service_list.each do |pkg|
+  hab_package "core/#{pkg}"
 end
 
 log 'oauth-warn' do
@@ -50,8 +47,13 @@ log 'oauth-warn' do
   only_if { node['depot']['oauth']['client_id'].nil? && node['depot']['oauth']['client_secret'].nil? }
 end
 
-template '/hab/svc/hab-builder-api/user.toml' do
-  source 'hab-builder-api-user.toml.erb'
+# setup builder-api
+directory '/hab/svc/builder-api/config' do
+  recursive true
+end
+
+template '/hab/svc/builder-api/user.toml' do
+  source 'builder-api-user.toml.erb'
   variables(
     oauth: node['depot']['oauth'],
     user_toml: node['depot']['user_toml']
@@ -59,78 +61,66 @@ template '/hab/svc/hab-builder-api/user.toml' do
   sensitive true
 end
 
-# setup hab-builder-sessionsrv
-directory '/hab/svc/hab-builder-sessionsrv' do
+# setup builder-sessionsrv
+directory '/hab/svc/builder-sessionsrv' do
   recursive true
 end
 
-template '/hab/svc/hab-builder-sessionsrv/user.toml' do
-  source 'hab-builder-sessionsrv-user.toml.erb'
+template '/hab/svc/builder-sessionsrv/user.toml' do
+  source 'builder-sessionsrv-user.toml.erb'
   variables oauth: node['depot']['oauth']
   sensitive true
 end
 
 hab_service 'core/redis' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9631',
-    '--listen-gossip 0.0.0.0:9638',
-    '--group database',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9631'
+  listen_gossip '0.0.0.0:9631'
+  service_group 'database'
+  action :load
 end
 
-hab_service 'core/hab-builder-router' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9630',
-    '--listen-gossip 0.0.0.0:9639',
-    '--group router',
-  ]
-  action [:enable, :start]
+hab_service 'core/builder-router' do
+  permanent_peer true
+  listen_http '0.0.0.0:9630'
+  listen_gossip '0.0.0.0:9639'
+  service_group 'router'
+  action :load
 end
 
-hab_service 'core/hab-builder-sessionsrv' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9629',
-    '--listen-gossip 0.0.0.0:9640',
-    '--bind database:redis.private',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
-  subscribes :restart, 'template[/hab/svc/hab-builder-sessionsrv/user.toml]'
+
+hab_service 'core/builder-sessionsrv' do
+  permanent_peer true
+  listen_http '0.0.0.0:9629'
+  listen_gossip '0.0.0.0:9640'
+  bind %w( database:redis.private router:builder-router.private)
+  action :load
 end
 
 hab_service 'core/hab-builder-vault' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9628',
-    '--listen-gossip 0.0.0.0:9641',
-    '--bind database:redis.private',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9628'
+  listen_gossip '0.0.0.0:9641'
+  bind %w( database:redis.private router:builder-router.private)
+  action :load
 end
 
-hab_service 'core/hab-builder-api' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9627',
-    '--listen-gossip 0.0.0.0:9642',
-    '--bind database:redis.private',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
-  subscribes :restart, 'template[/hab/svc/hab-builder-api/user.toml]'
+hab_service 'core/builder-api' do
+  permanent_peer true
+  listen_http '0.0.0.0:9627'
+  listen_gossip '0.0.0.0:9642'
+  bind %w( database:redis.private router:builder-router.private)
+  action :load
 end
 
 hab_service 'core/builder-api-proxy' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9626',
-    '--listen-gossip 0.0.0.0:9643',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9626'
+  listen_gossip '0.0.0.0:9643'
+  bind 'router:builder-router.private'
+  action :load
+end
+
+depot_service_list.each do |depot_service|
+  hab_sup depot_service
 end

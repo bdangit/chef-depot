@@ -54,9 +54,9 @@ describe 'depot::default' do
 
   context 'habitat depot services' do
     let(:api_service) { chef_run.hab_service('core/hab-builder-api') }
-    let(:session_service){ chef_run.hab_service('core/hab-builder-sessionsrv') }
+    let(:session_service) { chef_run.hab_service('core/hab-builder-sessionsrv') }
 
-    %w{redis hab-builder-router hab-builder-sessionsrv hab-builder-vault hab-builder-api builder-api-proxy}.each do |svc|
+    %w(redis hab-builder-router hab-builder-sessionsrv hab-builder-vault hab-builder-api builder-api-proxy).each do |svc|
       it "manages the hab_service #{svc}" do
         expect(chef_run).to enable_hab_service("core/#{svc}")
         expect(chef_run).to start_hab_service("core/#{svc}")

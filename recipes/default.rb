@@ -40,7 +40,7 @@ hab_install [cookbook_name, recipe_name].join('::')
 end
 
 # setup hab-builder-api
-directory '/hab/svc/hab-builder-api/config' do
+directory '/hab/svc/builder-api/config' do
   recursive true
 end
 

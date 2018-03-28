@@ -71,66 +71,51 @@ template '/hab/svc/hab-builder-sessionsrv/user.toml' do
 end
 
 hab_service 'core/redis' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9631',
-    '--listen-gossip 0.0.0.0:9638',
-    '--group database',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9631'
+  listen_gossip '0.0.0.0:9631'
+  service_group 'database'
+  action [:load, :start]
 end
 
 hab_service 'core/hab-builder-router' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9630',
-    '--listen-gossip 0.0.0.0:9639',
-    '--group router',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9630'
+  listen_gossip '0.0.0.0:9639'
+  service_group 'router'
+  action [:load, :start]
 end
 
 hab_service 'core/hab-builder-sessionsrv' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9629',
-    '--listen-gossip 0.0.0.0:9640',
-    '--bind database:redis.private',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9629'
+  listen_gossip '0.0.0.0:9640'
+  bind %w( database:redis.private router:hab-builder-router.private)
+  action [:load, :start]
   subscribes :restart, 'template[/hab/svc/hab-builder-sessionsrv/user.toml]'
 end
 
 hab_service 'core/hab-builder-vault' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9628',
-    '--listen-gossip 0.0.0.0:9641',
-    '--bind database:redis.private',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9628'
+  listen_gossip '0.0.0.0:9641'
+  bind %w( database:redis.private router:hab-builder-router.private)
+  action [:load, :start]
 end
 
 hab_service 'core/hab-builder-api' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9627',
-    '--listen-gossip 0.0.0.0:9642',
-    '--bind database:redis.private',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9627'
+  listen_gossip '0.0.0.0:9642'
+  bind %w( database:redis.private router:hab-builder-router.private)
+  action [:load, :start]
   subscribes :restart, 'template[/hab/svc/hab-builder-api/user.toml]'
 end
 
 hab_service 'core/builder-api-proxy' do
-  exec_start_options [
-    '--permanent-peer',
-    '--listen-http 0.0.0.0:9626',
-    '--listen-gossip 0.0.0.0:9643',
-    '--bind router:hab-builder-router.private',
-  ]
-  action [:enable, :start]
+  permanent_peer true
+  listen_http '0.0.0.0:9626'
+  listen_gossip '0.0.0.0:9643'
+  bind 'router:hab-builder-router.private'
+  action [:load, :start]
 end

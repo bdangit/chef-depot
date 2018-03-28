@@ -92,7 +92,7 @@ hab_service 'core/builder-sessionsrv' do
   listen_gossip '0.0.0.0:9640'
   bind %w( database:redis.private router:builder-router.private)
   action :load
-  subscribes :restart, 'template[/hab/svc/hab-builder-sessionsrv/user.toml]'
+  subscribes :restart, 'template[/hab/svc/builder-sessionsrv/user.toml]'
 end
 
 hab_service 'core/hab-builder-vault' do

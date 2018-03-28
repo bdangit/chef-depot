@@ -39,19 +39,19 @@ hab_install [cookbook_name, recipe_name].join('::')
   hab_package "core/#{pkg}"
 end
 
-# setup hab-builder-api
-directory '/hab/svc/builder-api/config' do
-  recursive true
-end
-
 log 'oauth-warn' do
   message "Github OAuth client id and secret are not set! Users will be unable to log into Habitat Depot '#{node['depot']['fqdn']}'"
   level :warn
   only_if { node['depot']['oauth']['client_id'].nil? && node['depot']['oauth']['client_secret'].nil? }
 end
 
+# setup builder-api
+directory '/hab/svc/builder-api/config' do
+  recursive true
+end
+
 template '/hab/svc/builder-api/user.toml' do
-  source 'hab-builder-api-user.toml.erb'
+  source 'builder-api-user.toml.erb'
   variables(
     oauth: node['depot']['oauth'],
     user_toml: node['depot']['user_toml']
@@ -59,13 +59,13 @@ template '/hab/svc/builder-api/user.toml' do
   sensitive true
 end
 
-# setup hab-builder-sessionsrv
+# setup builder-sessionsrv
 directory '/hab/svc/builder-sessionsrv' do
   recursive true
 end
 
 template '/hab/svc/builder-sessionsrv/user.toml' do
-  source 'hab-builder-sessionsrv-user.toml.erb'
+  source 'builder-sessionsrv-user.toml.erb'
   variables oauth: node['depot']['oauth']
   sensitive true
 end

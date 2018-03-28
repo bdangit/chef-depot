@@ -35,7 +35,9 @@ end
 
 hab_install [cookbook_name, recipe_name].join('::')
 
-%w(hab-sup redis builder-router builder-sessionsrv hab-builder-vault builder-api builder-api-proxy).each do |pkg|
+depot_service_list = %w(hab-sup redis builder-router builder-sessionsrv hab-builder-vault builder-api builder-api-proxy)
+
+depot_service_list.each do |pkg|
   hab_package "core/#{pkg}"
 end
 
@@ -86,13 +88,13 @@ hab_service 'core/builder-router' do
   action :load
 end
 
+
 hab_service 'core/builder-sessionsrv' do
   permanent_peer true
   listen_http '0.0.0.0:9629'
   listen_gossip '0.0.0.0:9640'
   bind %w( database:redis.private router:builder-router.private)
   action :load
-  subscribes :restart, 'template[/hab/svc/builder-sessionsrv/user.toml]'
 end
 
 hab_service 'core/hab-builder-vault' do
@@ -109,7 +111,6 @@ hab_service 'core/builder-api' do
   listen_gossip '0.0.0.0:9642'
   bind %w( database:redis.private router:builder-router.private)
   action :load
-  subscribes :restart, 'template[/hab/svc/builder-api/user.toml]'
 end
 
 hab_service 'core/builder-api-proxy' do
@@ -118,4 +119,8 @@ hab_service 'core/builder-api-proxy' do
   listen_gossip '0.0.0.0:9643'
   bind 'router:builder-router.private'
   action :load
+end
+
+depot_service_list.each do |depot_service|
+  hab_sup depot_service
 end

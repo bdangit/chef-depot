@@ -75,7 +75,7 @@ hab_service 'core/redis' do
   listen_http '0.0.0.0:9631'
   listen_gossip '0.0.0.0:9631'
   service_group 'database'
-  action [:load, :start]
+  action :load
 end
 
 hab_service 'core/hab-builder-router' do
@@ -83,7 +83,7 @@ hab_service 'core/hab-builder-router' do
   listen_http '0.0.0.0:9630'
   listen_gossip '0.0.0.0:9639'
   service_group 'router'
-  action [:load, :start]
+  action :load
 end
 
 hab_service 'core/hab-builder-sessionsrv' do
@@ -91,7 +91,7 @@ hab_service 'core/hab-builder-sessionsrv' do
   listen_http '0.0.0.0:9629'
   listen_gossip '0.0.0.0:9640'
   bind %w( database:redis.private router:hab-builder-router.private)
-  action [:load, :start]
+  action :load
   subscribes :restart, 'template[/hab/svc/hab-builder-sessionsrv/user.toml]'
 end
 
@@ -100,7 +100,7 @@ hab_service 'core/hab-builder-vault' do
   listen_http '0.0.0.0:9628'
   listen_gossip '0.0.0.0:9641'
   bind %w( database:redis.private router:hab-builder-router.private)
-  action [:load, :start]
+  action :load
 end
 
 hab_service 'core/hab-builder-api' do
@@ -108,7 +108,7 @@ hab_service 'core/hab-builder-api' do
   listen_http '0.0.0.0:9627'
   listen_gossip '0.0.0.0:9642'
   bind %w( database:redis.private router:hab-builder-router.private)
-  action [:load, :start]
+  action :load
   subscribes :restart, 'template[/hab/svc/hab-builder-api/user.toml]'
 end
 
@@ -117,5 +117,5 @@ hab_service 'core/builder-api-proxy' do
   listen_http '0.0.0.0:9626'
   listen_gossip '0.0.0.0:9643'
   bind 'router:hab-builder-router.private'
-  action [:load, :start]
+  action :load
 end
